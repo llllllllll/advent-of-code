@@ -1,0 +1,14 @@
+*~
+
+scratch.cc
+a.out
+
+# compiled artifacts
+*.o
+*.a
+*.so*
+
+# etags
+TAGS
+
+.gdb_history
