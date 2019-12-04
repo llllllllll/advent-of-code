@@ -2,17 +2,14 @@
 #include <iterator>
 #include <numeric>
 
-long long fuel(long long mass) {
+int fuel(int mass) {
     return mass / 3 - 2;
 }
 
 int main() {
-    long long sum = 0;
-    for (std::istream_iterator<double> it(std::cin);
-         it != std::istream_iterator<double>();
-         ++it) {
-        sum += fuel(*it);
-    }
-
-    std::cout << sum << '\n';
+    std::cout << std::accumulate(std::istream_iterator<int>{std::cin},
+                                 std::istream_iterator<int>{},
+                                 0,
+                                 [](int a, int b) { return a + fuel(b); })
+              << '\n';
 }

@@ -2,13 +2,10 @@
 #include <iterator>
 #include <numeric>
 
-long long fuel(long long mass) {
-    long long out = 0;
+int fuel(int mass) {
+    int out = 0;
     while (mass > 0) {
-        long long f = mass / 3 - 2;
-        if (f < 0) {
-            f = 0;
-        }
+        int f = std::max(mass / 3 - 2, 0);
         out += f;
         mass = f;
     }
@@ -16,12 +13,9 @@ long long fuel(long long mass) {
 }
 
 int main() {
-    long long sum = 0;
-    for (std::istream_iterator<double> it(std::cin);
-         it != std::istream_iterator<double>();
-         ++it) {
-        sum += fuel(*it);
-    }
-
-    std::cout << sum << '\n';
+    std::cout << std::accumulate(std::istream_iterator<int>{std::cin},
+                                 std::istream_iterator<int>{},
+                                 0,
+                                 [](int a, int b) { return a + fuel(b); })
+              << '\n';
 }
