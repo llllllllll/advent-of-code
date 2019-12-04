@@ -12,3 +12,6 @@ a.out
 TAGS
 
 .gdb_history
+
+*.um
+out

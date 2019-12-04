@@ -1,0 +1,68 @@
+def _inner_print(cs: array, n: uint) -> void:
+    if n:
+        # there are characters left to print
+        ix: uint = um.len(cs) - n
+        um.putchar(um.len(cs))
+        um.putchar(n)
+        um.putchar(ix)
+        # um.putchar(cs[ix])
+
+        # recurse
+        _inner_print(cs, n - 1)
+    else:
+        # no more characters, print the trailing newline
+        um.putchar(10)
+
+
+def print(cs: array) -> void:
+    _inner_print(cs, um.len(cs))
+
+
+def _ndigits(i: uint) -> uint:
+    match: uint = 0
+    match = (
+        (i == 9) +
+        (i == 8) +
+        (i == 7) +
+        (i == 6) +
+        (i == 5) +
+        (i == 4) +
+        (i == 3) +
+        (i == 2) +
+        (i == 1) +
+        (i == 0)
+    )
+    if match:
+        return 1
+    else:
+        return 1 + _ndigits(i / 10)
+
+
+def quot(a: uint, b: uint) -> uint:
+    if a:
+        return a - (b / a * a)
+    return 0
+
+
+def _write_digits(i: uint, ix: uint, out: array) -> void:
+    rem: uint = quot(i, 10)
+    out[ix] = rem + 48
+    if i:
+        _write_digits(i / 10, ix + 1, out)
+
+
+def itoa(i: uint) -> array:
+    out: array = um.alloc(_ndigits(i))
+    _write_digits(i, 0, out)
+
+
+def main() -> void:
+    x: uint = 10 <= 9
+
+    um.putchar(1 - 1)
+
+    # arr: array = itoa(1)
+    # print(arr)
+    arr: array = '1'
+    # um.putchar(um.len(arr))
+    print(arr)
