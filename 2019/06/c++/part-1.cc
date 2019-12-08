@@ -1,34 +1,18 @@
 #include <iostream>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
-struct node {
-    std::string name;
-    std::unordered_map<std::string, std::shared_ptr<node>> connections;
-
-    node(const std::string& name) : name(name) {}
-};
-
-std::unordered_map<std::string, std::shared_ptr<node>> parse_orbits(std::istream& in) {
+std::unordered_map<std::string, std::string> parse_direct_orbits(std::istream& in) {
     std::string base;
     std::string orbiter;
     std::string* target = &base;
 
-    std::unordered_map<std::string, std::shared_ptr<node>> nodes;
+    std::unordered_map<std::string, std::string> out;
 
     char c;
     while (in.get(c)) {
         if (c == '\n') {
-            auto& n = nodes[base];
-            if (!n) {
-                n = std::make_shared<node>(base);
-            }
-            auto& ptr = nodes[orbiter];
-            if (!ptr) {
-                ptr = std::make_shared<node>(orbiter);
-            }
-            n->connections[orbiter] = ptr;
-            ptr->connections[base] = n;
+            out[orbiter] = base;
 
             base.clear();
             orbiter.clear();
@@ -42,46 +26,23 @@ std::unordered_map<std::string, std::shared_ptr<node>> parse_orbits(std::istream
         }
     }
 
-    return nodes;
+    return out;
 }
 
-int shortest_path(const std::unordered_map<std::string, std::shared_ptr<node>>& g,
-                  std::shared_ptr<node> start,
-                  std::shared_ptr<node> end,
-                  std::shared_ptr<node> prev,
-                  int distance) {
-    if (start == end) {
-        return distance;
-    }
-    int shortest = -1;
-    for (const auto& [k, v] : start->connections) {
-        if (v == prev) {
-            continue;
+int count_orbits(const std::unordered_map<std::string, std::string>& m) {
+    int count = 0;
+    for (const auto& [k, v ] : m) {
+        const std::string* target = &v;
+        while (*target != "COM") {
+            target = &m.find(*target)->second;
+            ++count;
         }
-        int dist = shortest_path(g, v, end, start, distance + 1);
-        if (shortest < 0 || (dist >= 0 && dist <= shortest)) {
-            shortest = dist;
-        }
+        ++count;
     }
-    return shortest;
-}
-
-int shortest_path(const std::unordered_map<std::string, std::shared_ptr<node>>& g,
-                  const std::string& start,
-                  const std::string& end) {
-    auto s = g.find(start);
-    if (s == g.end()) {
-        throw std::runtime_error{"couldn't find start node"};
-    }
-    auto e = g.find(end);
-    if (e == g.end()) {
-        throw std::runtime_error{"couldn't find end node"};
-    }
-
-    return shortest_path(g, s->second, e->second, nullptr, 0);
+    return count;
 }
 
 int main() {
-    auto g = parse_orbits(std::cin);
-    std::cout << shortest_path(g, "YOU", "SAN") - 2 << '\n';
+    auto m = parse_direct_orbits(std::cin);
+    std::cout << count_orbits(m) << '\n';
 }
