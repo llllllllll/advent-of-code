@@ -1,4 +1,3 @@
-#include <cmath>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -10,7 +9,7 @@
 
 using word = long long;
 
-enum class opcode : word {
+enum class opcode : char {
     add = 1,
     mul = 2,
     inp = 3,
@@ -23,7 +22,7 @@ enum class opcode : word {
     halt = 99,
 };
 
-enum class access_mode : word {
+enum class access_mode : char {
     pos = 0,
     imm = 1,
     rel = 2,
@@ -36,16 +35,24 @@ struct instruction {
     access_mode m3;
 
 private:
-    word digit(word n, word digit) {
-        return (n % static_cast<word>(std::pow(10, digit))) / std::pow(10, digit - 1);
+    constexpr word ipow(word n, word digit) {
+        word out = n;
+        for (word ix = 0; ix < digit - 1; ++ix) {
+            out *= n;
+        }
+        return out;
+    }
+
+    constexpr word digit(word n, word digit) {
+        return (n % ipow(10, digit)) / ipow(10, digit - 1);
     }
 
 public:
     instruction(word encoded)
-        : op(opcode{encoded % 100}),
-          m1(access_mode{digit(encoded, 3)}),
-          m2(access_mode{digit(encoded, 4)}),
-          m3(access_mode{digit(encoded, 5)}) {}
+        : op(static_cast<opcode>(encoded % 100)),
+          m1(static_cast<access_mode>(digit(encoded, 3))),
+          m2(static_cast<access_mode>(digit(encoded, 4))),
+          m3(static_cast<access_mode>(digit(encoded, 5))) {}
 };
 
 class memory_space {
