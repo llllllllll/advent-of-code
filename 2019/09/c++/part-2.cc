@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include <sys/mman.h>
+
 using word = long long;
 
 enum class opcode : word {
@@ -27,108 +29,6 @@ enum class access_mode : word {
     rel = 2,
 };
 
-namespace detail {
-constexpr std::size_t pow(std::size_t a, std::size_t b) {
-    std::size_t out = 1;
-    for (std::size_t ix = 0; ix < b; ++ix) {
-        out *= a;
-    }
-    return out;
-}
-}  // namespace detail
-
-/** A sparse k-ary tree.
-
-    @tparam T The type data stored in the tree.
-    @tparam width The width of each node in the tree (k).
-    @tparam height The height of the tree.
- */
-template<typename T, std::size_t width, std::size_t height>
-class ktree {
-    using child_type = ktree<T, width, height - 1>;
-
-    std::array<std::unique_ptr<child_type>, width> m_children;
-
-public:
-    ktree() = default;
-    ktree(const ktree& cpfrom) {
-        std::size_t ix = 0;
-        for (const auto& child : cpfrom.m_children) {
-            if (child) {
-                m_children[ix] = std::make_unique<child_type>(*child);
-            }
-            ++ix;
-        }
-    }
-    ktree(ktree&&) = default;
-
-    constexpr static std::size_t size() {
-        return detail::pow(width, height);
-    }
-
-    constexpr static std::ptrdiff_t ssize() {
-        return detail::pow(width, height);
-    }
-
-    constexpr const std::array<std::unique_ptr<child_type>, width>& children() const {
-        return m_children;
-    }
-
-    constexpr T& operator[](std::ptrdiff_t ix) {
-        constexpr std::ptrdiff_t level_size = child_type::ssize();
-
-        std::ptrdiff_t child_ix = ix / level_size;
-        std::ptrdiff_t recurse_ix = ix % level_size;
-        if (!m_children[child_ix]) {
-            m_children[child_ix] = std::make_unique<child_type>();
-        }
-        return (*m_children[child_ix])[recurse_ix];
-    }
-
-    constexpr const T* get(std::ptrdiff_t ix) const {
-        constexpr std::ptrdiff_t level_size = child_type::ssize();
-
-        std::ptrdiff_t child_ix = ix / level_size;
-        std::ptrdiff_t recurse_ix = ix % level_size;
-        if (!m_children[child_ix]) {
-            return nullptr;
-        }
-        return m_children[child_ix]->get(recurse_ix);
-    }
-};
-
-// recursive base case for height = 1, basically just an array.
-template<typename T, std::size_t width>
-class ktree<T, width, 1> {
-    std::array<T, width> m_children = {0};
-
-public:
-    constexpr static std::size_t size() {
-        return width;
-    }
-
-    constexpr static std::ptrdiff_t ssize() {
-        return width;
-    }
-
-    constexpr const std::array<T, width>& children() const {
-        return m_children;
-    }
-
-    constexpr T& operator[](std::ptrdiff_t ix) {
-        return m_children[ix];
-    }
-
-    constexpr const T* get(std::ptrdiff_t ix) const {
-        return &m_children[ix];
-    }
-};
-
-template<typename T, std::size_t width>
-class ktree<T, width, 0> {
-    static_assert(!std::is_same_v<T, T>, "cannot have height 0 ktree");
-};
-
 struct instruction {
     opcode op;
     access_mode m1;
@@ -148,17 +48,57 @@ public:
           m3(access_mode{digit(encoded, 5)}) {}
 };
 
+class memory_space {
+    std::size_t m_size;
+    word* m_data;
+
+    static word* alloc(std::size_t size) {
+        word* out = reinterpret_cast<word*>(
+            mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+        if (out == MAP_FAILED) {
+            throw std::bad_alloc{};
+        }
+        return out;
+    }
+
+public:
+    memory_space() : m_size(0), m_data(nullptr) {}
+
+    memory_space(std::size_t size) : m_size(size), m_data(alloc(size)) {}
+
+    memory_space(const memory_space& cpfrom)
+        : m_size(cpfrom.m_size), m_data(alloc(cpfrom.m_size)) {}
+
+    memory_space(memory_space&& mvfrom) : m_size(mvfrom.m_size), m_data(mvfrom.m_data) {
+        mvfrom.m_size = 0;
+        mvfrom.m_data = nullptr;
+    }
+
+    word operator[](std::ptrdiff_t ix) const {
+        return m_data[ix];
+    }
+
+    word& operator[](std::ptrdiff_t ix) {
+        return m_data[ix];
+    }
+
+    ~memory_space() {
+        if (m_data) {
+            munmap(m_data, m_size);
+        }
+    }
+};
+
 class machine {
 private:
     std::size_t m_ip;
     word m_offset_reg;
-    ktree<word, 8, 22> m_prog;
+    memory_space m_prog;
     std::function<word()> m_input;
     std::function<void(word)> m_output;
 
 public:
     machine() = default;
-    machine(const machine&) = default;
 
     machine(
         std::istream& prog,
@@ -169,7 +109,7 @@ public:
                 return out;
             },
         std::function<void(word)> output = [](word n) { std::cout << n << '\n'; })
-        : m_ip(0), m_offset_reg(0), m_input(input), m_output(output) {
+        : m_ip(0), m_offset_reg(0), m_prog(1L << 32), m_input(input), m_output(output) {
         word val = 0;
         bool negate = false;
         std::size_t ix = 0;
@@ -206,6 +146,14 @@ public:
         : m_ip(0), m_prog(m.m_prog), m_input(input), m_output(output) {}
 
 private:
+    word deref(std::size_t ix, bool offset) const {
+        word val = m_prog[ix];
+        if (offset) {
+            val += m_offset_reg;
+        }
+        return m_prog[val];
+    }
+
     word& deref(std::size_t ix, bool offset) {
         word val = m_prog[ix];
         if (offset) {
@@ -214,7 +162,7 @@ private:
         return m_prog[val];
     }
 
-    word raccess(access_mode mode, std::size_t ix) {
+    word raccess(access_mode mode, std::size_t ix) const {
         switch (mode) {
         case access_mode::pos:
             return deref(ix, false);
@@ -240,62 +188,114 @@ private:
         }
     }
 
+    instruction next_instr() {
+        return instruction{m_prog[m_ip]};
+    }
 
-    class halt {};
+    void add(instruction instr) {
+        waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) +
+                                      raccess(instr.m2, m_ip + 2);
+        m_ip += 4;
+    }
+
+    void mul(instruction instr) {
+        waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) *
+                                      raccess(instr.m2, m_ip + 2);
+        m_ip += 4;
+    }
+
+    void inp(instruction instr) {
+        waccess(instr.m1, m_ip + 1) = m_input();
+        m_ip += 2;
+    }
+
+    void outp(instruction instr) {
+        m_output(raccess(instr.m1, m_ip + 1));
+        m_ip += 2;
+    }
+
+    void jit(instruction instr) {
+        if (raccess(instr.m1, m_ip + 1)) {
+            m_ip = raccess(instr.m2, m_ip + 2);
+        }
+        else {
+            m_ip += 3;
+        }
+    }
+
+    void jif(instruction instr) {
+        if (!raccess(instr.m1, m_ip + 1)) {
+            m_ip = raccess(instr.m2, m_ip + 2);
+        }
+        else {
+            m_ip += 3;
+        }
+    }
+
+    void lt(instruction instr) {
+        waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) <
+                                      raccess(instr.m2, m_ip + 2);
+        m_ip += 4;
+
+        instruction next = next_instr();
+        switch (next.op) {
+        case opcode::jit:
+            return jit(next);
+        case opcode::jif:
+            return jif(next);
+        default:;
+        }
+    }
+
+    void eq(instruction instr) {
+        waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) ==
+                                      raccess(instr.m2, m_ip + 2);
+        m_ip += 4;
+
+        instruction next = next_instr();
+        switch (next.op) {
+        case opcode::jit:
+            return jit(next);
+        case opcode::jif:
+            return jif(next);
+        default:;
+        }
+    }
+
+    void rbo(instruction instr) {
+        m_offset_reg += raccess(instr.m1, m_ip + 1);
+        m_ip += 2;
+    }
+
+    struct halt_signal {};
+
+    [[noreturn]] void halt() {
+        throw halt_signal{};
+    }
 
     void step() {
-        instruction instr{m_prog[m_ip]};
+        instruction instr = next_instr();
         switch (instr.op) {
         case opcode::add:
-            waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) +
-                                          raccess(instr.m2, m_ip + 2);
-            m_ip += 4;
-            break;
+            return add(instr);
         case opcode::mul:
-            waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) *
-                                          raccess(instr.m2, m_ip + 2);
-            m_ip += 4;
-            break;
+            return mul(instr);
         case opcode::inp:
-            waccess(instr.m1, m_ip + 1) = m_input();
-            m_ip += 2;
-            break;
+            return inp(instr);
         case opcode::outp:
-            m_output(raccess(instr.m1, m_ip + 1));
-            m_ip += 2;
-            break;
+            return outp(instr);
         case opcode::jit:
-            if (raccess(instr.m1, m_ip + 1)) {
-                m_ip = raccess(instr.m2, m_ip + 2);
-            }
-            else {
-                m_ip += 3;
-            }
-            break;
+            return jit(instr);
         case opcode::jif:
-            if (!raccess(instr.m1, m_ip + 1)) {
-                m_ip = raccess(instr.m2, m_ip + 2);
-            }
-            else {
-                m_ip += 3;
-            }
-            break;
+            return jif(instr);
         case opcode::lt:
-            waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) <
-                                          raccess(instr.m2, m_ip + 2);
-            m_ip += 4;
-            break;
+            return lt(instr);
         case opcode::eq:
-            waccess(instr.m3, m_ip + 3) = raccess(instr.m1, m_ip + 1) ==
-                                          raccess(instr.m2, m_ip + 2);
-            m_ip += 4;
-            break;
+            return eq(instr);
         case opcode::rbo:
-            m_offset_reg += raccess(instr.m1, m_ip + 1);
-            m_ip += 2;
-            break;
+            return rbo(instr);
         case opcode::halt:
-            throw halt{};
+            return halt();
         default:
             __builtin_unreachable();
         }
@@ -308,7 +308,7 @@ public:
                 step();
             }
         }
-        catch (halt) {
+        catch (halt_signal) {
         }
     }
 };
