@@ -4,7 +4,7 @@
 #include <tuple>
 #include <vector>
 
-std::optional<std::tuple<int, int, int>> find_sum_matching(const std::vector<int> vs,
+std::optional<std::tuple<int, int, int>> find_sum_matching(const std::vector<int>& vs,
                                                            int target) {
     for (auto a = vs.begin(); a != vs.end(); ++a) {
         for (auto b = std::next(a); b != vs.end(); ++b) {
