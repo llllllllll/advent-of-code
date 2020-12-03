@@ -8,9 +8,8 @@
 
 std::size_t trees_hit(const std::vector<std::string>& map, int x_step, int y_step) {
     std::size_t count = 0;
-    std::size_t col = 0;
-    std::size_t row = 0;
-    for (; row < map.size(); row += y_step, col = (col + x_step) % map[0].size()) {
+    for (std::size_t col = 0, row = 0; row < map.size();
+         row += y_step, col = (col + x_step) % map[0].size()) {
         count += map[row][col] == '#';
     }
     return count;
