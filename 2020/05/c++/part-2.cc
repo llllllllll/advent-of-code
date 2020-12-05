@@ -4,44 +4,32 @@
 #include <string_view>
 #include <unordered_set>
 
-#include "utils/line.hpp"
-
 int seat_id(int row, int col) {
     return row * 8 + col;
 }
 
-int seat_location(std::string_view s) {
-    int lower_row = 0;
-    int upper_row = 127;
-
+int partition(int lower, int upper, std::string_view s) {
     for (char c : s.substr(0, 7)) {
-        if (c == 'F') {
-            upper_row = std::midpoint(lower_row, upper_row);
+        if (c == 'F' || c == 'L') {
+            upper = std::midpoint(lower, upper);
         }
         else {
-            lower_row = std::midpoint(lower_row, upper_row) + 1;
+            lower = std::midpoint(lower, upper);
         }
     }
 
-    int lower_col = 0;
-    int upper_col = 7;
-    for (char c : s.substr(7, 3)) {
-        if (c == 'L') {
-            upper_col = std::midpoint(lower_col, upper_col);
-        }
-        else {
-            lower_col = std::midpoint(lower_col, upper_col) + 1;
-        }
-    }
+    return lower;
+}
 
-    return seat_id(lower_row, lower_col);
+int seat_location(std::string_view s) {
+    return seat_id(partition(0, 128, s.substr(0, 7)), partition(0, 8, s.substr(7, 3)));
 }
 
 template<typename I>
 std::unordered_set<int> parse_seat_locations(I begin, I end) {
     std::unordered_set<int> out;
     for (I it = begin; it != end; ++it) {
-        out.emplace(seat_location(it->get()));
+        out.emplace(seat_location(*it));
     }
     return out;
 }
@@ -60,7 +48,7 @@ int your_seat(const std::unordered_set<int>& seats) {
 
 int main() {
     const auto seat_locations =
-        parse_seat_locations(std::istream_iterator<aoc::line>{std::cin},
-                             std::istream_iterator<aoc::line>{});
+        parse_seat_locations(std::istream_iterator<std::string>{std::cin},
+                             std::istream_iterator<std::string>{});
     std::cout << your_seat(seat_locations) << '\n';
 }

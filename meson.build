@@ -37,18 +37,11 @@ days = [
 
 parts = [1, 2]
 
-skipped = [
-  '2020-13-2',
-]
-
 foreach year : years
   foreach day : days
     input = year / day / 'input'
     foreach part : parts
       name = '@0@-@1@-@2@'.format(year, day, part)
-      if name in skipped
-        continue
-      endif
       path = year / day / 'c++' / 'part-' + part.to_string() + '.cc'
       if fs.exists(path)
         exe = executable(
