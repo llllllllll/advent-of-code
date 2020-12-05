@@ -1,8 +1,8 @@
-#include <numeric>
-#include <iterator>
 #include <iostream>
-#include <unordered_map>
+#include <iterator>
+#include <numeric>
 #include <regex>
+#include <unordered_map>
 
 #include "utils/line.hpp"
 
@@ -46,8 +46,6 @@ bool is_complete_passport(const std::unordered_map<std::string, std::string>& ma
 int main() {
     const auto passports = parse_passports(std::istream_iterator<aoc::line>{std::cin},
                                            std::istream_iterator<aoc::line>{});
-    std::cout << std::ranges::count_if(passports.begin(),
-                                       passports.end(),
-                                       is_complete_passport)
+    std::cout << std::count_if(passports.begin(), passports.end(), is_complete_passport)
               << '\n';
 }

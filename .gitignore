@@ -15,3 +15,5 @@ TAGS
 
 *.um
 out
+
+build/*
