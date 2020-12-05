@@ -1,7 +1,7 @@
-#include <iterator>
-#include <string_view>
-#include <numeric>
 #include <iostream>
+#include <iterator>
+#include <numeric>
+#include <string_view>
 
 #include "utils/line.hpp"
 
@@ -42,5 +42,6 @@ int max_seat_location(I begin, I end) {
 int main() {
     std::cout << seat_location("FBFBBFFRLR") << '\n';
     std::cout << max_seat_location(std::istream_iterator<aoc::line>{std::cin},
-                                   std::istream_iterator<aoc::line>{}) << '\n';
+                                   std::istream_iterator<aoc::line>{})
+              << '\n';
 }
