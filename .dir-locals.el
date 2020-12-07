@@ -10,7 +10,8 @@
                           (substring (shell-command-to-string s) 0 -1))
 
                         (setq flycheck-gcc-include-path
-                              (concat
-                               (do-shell "git rev-parse --show-toplevel")
-                               "/utils/include"))))
+                              (list
+                               (concat
+                                (do-shell "git rev-parse --show-toplevel")
+                                "/utils/include")))))
               (flycheck-gcc-language-standard . "gnu++17")))))
