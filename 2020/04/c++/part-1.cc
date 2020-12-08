@@ -4,7 +4,7 @@
 #include <regex>
 #include <unordered_map>
 
-#include "utils/line.hpp"
+#include "aoc/line.hpp"
 
 using passport = std::unordered_map<std::string, std::string>;
 

@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "utils/line.hpp"
+#include "aoc/line.hpp"
 
 using contents = std::vector<std::pair<std::string, int>>;
 

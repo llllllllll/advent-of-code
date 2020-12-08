@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include <utils/line.hpp>
+#include <aoc/line.hpp>
 
 using answers = std::array<bool, 26>;
 

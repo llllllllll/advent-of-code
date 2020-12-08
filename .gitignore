@@ -16,4 +16,4 @@ TAGS
 *.um
 out
 
-build/*
+.build/*

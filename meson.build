@@ -3,7 +3,7 @@ fs = import('fs')
 
 years = ['2019', '2020']
 
-utils_incdir = include_directories('utils/include')
+utils_incdir = include_directories('include')
 thread_dep = dependency('threads')
 ncurses_dep = dependency('ncurses')
 

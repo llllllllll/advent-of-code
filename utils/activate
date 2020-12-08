@@ -1,0 +1,129 @@
+#!/usr/bin/bash
+
+AOC_ROOT=$(dirname $(dirname $(realpath "$BASH_SOURCE")))
+
+deactivate() {
+    unset -f deactivate
+    unset -f aoc-parse-date
+    unset -f aoc-start
+    unset -f aoc-cwd-date
+    unset -f aoc-cwd-date
+    unset -f aoc-.builddir
+    unset -f aoc-.prog
+    unset -f aoc-build
+    unset -f aoc-run
+    unset -f aoc-gdb
+}
+
+aoc-parse-date() (
+    set -euo pipefail
+
+    year=$1
+    case $year in
+    2019)
+        ;;
+    2020)
+        ;;
+    *)
+        >&2 echo "invalid year: $year"
+        return -1
+        ;;
+    esac
+
+    valid_days=(
+        "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13"
+        "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25"
+    )
+
+    day=""
+    for opt in "${valid_days[@]}";do
+        if [[ "$2" == "$opt" ]];then
+            day="$opt"
+            break;
+        fi
+    done
+    if [ -z "$day" ];then
+        >&2 echo "invalid day: $2"
+        return -2
+    fi
+
+    echo "$year $day"
+)
+
+aoc-start() (
+    set -euo pipefail
+
+    date=($(aoc-parse-date $1 $2))
+
+    path=$AOC_ROOT/${date[0]}/${date[1]}
+    mkdir -p $path/c++
+    cp $AOC_ROOT/utils/template.cc $path/c++/part-1.cc
+    cp $AOC_ROOT/utils/template.cc $path/c++/part-2.cc
+    rm -rf $AOC_ROOT/.build
+)
+
+aoc-cwd-date() (
+    set -euo pipefail
+
+    pattern="$AOC_ROOT/([0-9]{4})/([0-9]{2})/.*"
+    if [[ "$PWD" =~ $pattern ]];then
+        aoc-parse-date ${BASH_REMATCH[1]} ${BASH_REMATCH[2]}
+    else
+        >&2 echo "$PWD is not an advent of code problem directory"
+        return -1
+    fi
+)
+
+aoc-.builddir() (
+    set -euo pipefail
+
+    pushd $AOC_ROOT > /dev/null
+    meson .build -Doptimization=0 > /dev/null 2>&1
+    popd > /dev/null
+    echo $AOC_ROOT/.build
+)
+
+aoc-.prog() (
+    set -euo pipefail
+
+    if [[ "$#" -eq 1 ]];then
+        case "$1" in
+        [1-2])
+            date=($(aoc-cwd-date))
+            part=$1
+            ;;
+        *)
+            >&2 echo "invalid part number: $1"
+            return -1
+            ;;
+        esac
+    elif [[ "$#" -ne 3 ]];then
+        >&2 echo "usage: aoc-build [year day part]|[part]"
+    else
+        date=($(aoc-parse-date $1 $2))
+        part=$3
+    fi
+
+    echo "${date[0]}-${date[1]}-$part"
+)
+
+aoc-build() (
+    set -euo pipefail
+
+    prog=$(aoc-.prog $@)
+    meson compile -C "$(aoc-.builddir)" $prog
+)
+
+aoc-run() (
+    set -euo pipefail
+    prog=$(aoc-.prog $@)
+    meson compile -C "$(aoc-.builddir)" $prog
+    $AOC_ROOT/.build/$prog
+)
+
+aoc-gdb() (
+    set -euo pipefail
+    prog=$(aoc-.prog $@)
+    meson compile -C "$(aoc-.builddir)" $prog
+    gdb $AOC_ROOT/.build/$prog
+)
