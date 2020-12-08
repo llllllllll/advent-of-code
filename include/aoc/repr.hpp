@@ -2,30 +2,42 @@
 
 #include <iostream>
 #include <ranges>
+#include <sstream>
 #include <type_traits>
 
 namespace aoc {
 namespace detail {
-template<typename T, typename>
-struct repr;
+template<typename F>
+struct printer {
+    F f;
 
-template<typename T>
-struct repr<T, void> {
-    const T& value;
-
-    friend std::ostream& operator<<(std::ostream& os, repr r) {
-        return os << r.value;
+    friend std::ostream& operator<<(std::ostream& os, const printer& p) {
+        return p.f(os);
     }
 };
 
 template<typename T>
-requires std::is_convertible_v<T, std::string_view>
-struct repr<T, void> {
-    std::string_view value;
+concept string_like = std::is_convertible_v<T, std::string_view>;
 
-    friend std::ostream& operator<<(std::ostream& os, repr r) {
+template<typename T>
+concept non_string_range = !string_like<T> && std::ranges::range<T>;
+
+template<typename T>
+concept tuple_like = requires {
+    std::tuple_size<T>{};
+};
+}  // namespace detail
+
+template<typename T>
+auto repr(const T& val) {
+    return detail::printer{[&](std::ostream& os) -> std::ostream& { return os << val; }};
+}
+
+template<detail::string_like T>
+auto repr(const T& val) {
+    return detail::printer{[&](std::ostream& os) -> std::ostream& {
         os << '"';
-        for (char c : r.value) {
+        for (char c : val) {
             switch (c) {
             case '"':
                 os << '\\' << '"';
@@ -51,17 +63,35 @@ struct repr<T, void> {
         }
         os << '"';
         return os;
-    }
-};
+    }};
+}
 
-template<std::ranges::range T>
-struct repr<T, void> {
-    const T& value;
 
-    friend std::ostream& operator<<(std::ostream& os, repr r) {
+namespace detail {
+template<typename T, std::size_t... Ixs>
+std::ostream& print_tuple(std::ostream& os, const T& tup, std::index_sequence<Ixs...>) {
+    os << "(";
+    (..., (os << (Ixs == 0 ? "" : ", ") << repr(std::get<Ixs>(tup))));
+    os << ")";
+    return os;
+}
+}  // namespace detail
+
+template<detail::tuple_like T>
+auto repr(const T& val) {
+    return detail::printer{[&](std::ostream& os) -> std::ostream& {
+        return detail::print_tuple(os,
+                                   val,
+                                   std::make_index_sequence<std::tuple_size_v<T>>{});
+    }};
+}
+
+template<detail::non_string_range T>
+auto repr(const T& val) {
+    return detail::printer{[&](std::ostream& os) -> std::ostream& {
         os << "{";
-        auto begin = std::ranges::begin(r.value);
-        const auto end = std::ranges::end(r.value);
+        auto begin = std::ranges::begin(val);
+        const auto end = std::ranges::end(val);
         if (begin != end) {
             os << repr(*begin);
             ++begin;
@@ -71,12 +101,13 @@ struct repr<T, void> {
         }
         os << "}";
         return os;
-    }
-};
-}  // namespace dispatch
+    }};
+}
 
 template<typename T>
-auto repr(const T& r) {
-    return detail::repr{r};
+std::string repr_str(const T& val) {
+    std::stringstream ss;
+    ss << aoc::repr(val);
+    return ss.str();
 }
 }  // namespace aoc

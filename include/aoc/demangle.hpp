@@ -10,15 +10,15 @@
 
 namespace aoc {
 class demangle_error : public std::exception {
-private:
-    std::string m_msg;
-
 public:
-    demangle_error(const std::string& msg) : m_msg(msg) {}
+    demangle_error(const std::string& msg) : msg_(msg) {}
 
     const char* what() const noexcept override {
-        return m_msg.data();
+        return msg_.data();
     }
+
+private:
+    std::string msg_;
 };
 
 class invalid_mangled_name : public demangle_error {

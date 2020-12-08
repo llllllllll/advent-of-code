@@ -1,5 +1,4 @@
 #include <array>
-#include <charconv>
 #include <deque>
 #include <iostream>
 #include <iterator>
@@ -37,14 +36,7 @@ struct instruction {
         else {
             throw std::runtime_error{"unknown op"};
         }
-
-        auto [p, ec] = std::from_chars(s.data() + 5, s.end(), out.param);
-        if (ec != std::errc{}) {
-            throw std::runtime_error{"invalid param"};
-        }
-        if (s[4] == '-') {
-            out.param = -out.param;
-        }
+        out.param = aoc::parse_integral<int>(s.substr(4));
         return out;
     }
 };
