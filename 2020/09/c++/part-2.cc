@@ -14,7 +14,7 @@
 bool valid(int cand, const std::deque<long>& buf) {
     for (int x : buf) {
         for (int y : buf) {
-            if (x + y == cand) {
+            if (x != y && x + y == cand) {
                 return true;
             }
         }
