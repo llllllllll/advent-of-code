@@ -77,7 +77,7 @@ int main() {
     const auto ints = read_ints(std::istream_iterator<aoc::line>{std::cin},
                                 std::istream_iterator<aoc::line>{});
     const auto target = first_invalid(ints.begin(), ints.end());
-    const auto upper = std::upper_bound(ints.begin(), ints.end(), target);
+    const auto upper = ints.end();
     const auto sum = std::accumulate(ints.begin(), upper, 0l);
     std::cout << find_weakness(target, sum, ints.begin(), upper) << '\n';
 }
