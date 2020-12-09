@@ -37,7 +37,7 @@ struct instruction {
         else {
             throw std::runtime_error{"unknown op"};
         }
-        out.param = aoc::parse_integral<int>(s.substr(4));
+        out.param = aoc::parse<int>(s.substr(4));
         return out;
     }
 };

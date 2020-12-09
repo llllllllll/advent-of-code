@@ -27,7 +27,6 @@ private:
 };
 
 namespace detail {
-
 template<std::integral T>
 T parse_integral_no_sign(std::string_view sv) {
     T out;
@@ -38,8 +37,9 @@ T parse_integral_no_sign(std::string_view sv) {
     return out;
 }
 }  // namespace detail
-template<std::integral T = int>
-T parse_integral(std::string_view sv) {
+
+template<std::integral T>
+T parse(std::string_view sv) {
     if (sv.empty()) {
         throw bad_parse<T>{sv};
     }
