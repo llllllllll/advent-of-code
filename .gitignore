@@ -17,3 +17,4 @@ TAGS
 out
 
 .build/*
+subprojects/*

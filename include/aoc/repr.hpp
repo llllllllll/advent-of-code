@@ -110,4 +110,9 @@ std::string repr_str(const T& val) {
     ss << aoc::repr(val);
     return ss.str();
 }
+
+template<typename T>
+auto dbg(const T& val) {
+    std::cerr << repr(val) << '\n';
+}
 }  // namespace aoc

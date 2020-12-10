@@ -127,3 +127,7 @@ aoc-gdb() (
     meson compile -C "$(aoc-.builddir)" $prog
     gdb $AOC_ROOT/.build/$prog
 )
+
+aoc-test() (
+    meson test -C "$(aoc-.builddir)"
+)

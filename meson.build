@@ -54,3 +54,5 @@ foreach year : years
     endforeach
   endforeach
 endforeach
+
+subdir('tests')
