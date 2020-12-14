@@ -26,4 +26,8 @@ inline std::string strip(std::string_view sv) {
     sv.remove_suffix(sv.find_last_not_of(whitespace));
     return std::string{sv};
 }
+
+inline bool starts_with(std::string_view cs, std::string_view prefix) {
+    return cs.rfind(prefix, 0) == 0;
+}
 }  // namespace aoc

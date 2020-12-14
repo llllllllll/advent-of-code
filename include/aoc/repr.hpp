@@ -113,6 +113,6 @@ std::string repr_str(const T& val) {
 
 template<typename T>
 auto dbg(const T& val) {
-    std::cerr << repr(val) << '\n';
+    std::cerr << repr(val) << std::endl;
 }
 }  // namespace aoc

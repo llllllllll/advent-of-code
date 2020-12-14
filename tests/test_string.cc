@@ -65,4 +65,9 @@ TEST(string, split_multi_char_delim) {
     EXPECT_EQ(actual, expected);
 }
 
-T
+TEST(string, starts_with) {
+    const std::string input = "abcdef";
+    EXPECT_TRUE(aoc::starts_with(input, "abc"));
+    EXPECT_FALSE(aoc::starts_with(input, "ABC"));
+    EXPECT_FALSE(aoc::starts_with(input, "abcdefg"));
+}

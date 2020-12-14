@@ -18,6 +18,10 @@ public:
         return data_;
     }
 
+    operator std::string_view() const {
+        return data_;
+    }
+
     const std::string& get() const {
         return data_;
     }
