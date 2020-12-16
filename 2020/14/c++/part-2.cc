@@ -30,7 +30,6 @@ public:
     }
 
 private:
-    template<typename... Args>
     void fill(std::uint64_t floating, std::uint64_t mask) {
         if (floating == 0) {
             floating_alts_.emplace_back(mask);
