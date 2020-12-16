@@ -23,7 +23,10 @@ inline std::vector<std::string> split(std::string_view sv, char delim) {
 inline std::string strip(std::string_view sv) {
     constexpr std::string_view whitespace = " \r\n\t";
     sv.remove_prefix(sv.find_first_not_of(whitespace));
-    sv.remove_suffix(sv.find_last_not_of(whitespace));
+    const auto suffix = sv.find_last_not_of(whitespace);
+    if (suffix != std::string_view::npos) {
+        sv.remove_suffix(sv.size() - suffix - 1);
+    }
     return std::string{sv};
 }
 
