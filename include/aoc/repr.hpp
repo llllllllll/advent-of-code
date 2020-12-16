@@ -111,8 +111,16 @@ std::string repr_str(const T& val) {
     return ss.str();
 }
 
-template<typename T>
-auto dbg(const T& val) {
-    std::cerr << repr(val) << std::endl;
+template<typename T, typename... Ts>
+auto dbg(const T& head, const Ts&... tail) {
+    std::cerr << repr(head);
+    if constexpr (sizeof...(tail)) {
+        std::cerr << ' ';
+        dbg(tail...);
+    }
+    else {
+        std::cerr << std::endl;
+    }
 }
+
 }  // namespace aoc
