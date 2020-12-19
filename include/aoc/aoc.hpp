@@ -3,6 +3,7 @@
 #include "aoc/base_includes.hpp"
 #include "aoc/demangle.hpp"
 #include "aoc/error.hpp"
+#include "aoc/hash.hpp"
 #include "aoc/input.hpp"
 #include "aoc/line.hpp"
 #include "aoc/meta.hpp"
