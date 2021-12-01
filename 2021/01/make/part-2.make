@@ -1,18 +1,12 @@
-include ../../../gmsl/gmsl
+include ../../../make-utils/make-utils.make
 
 input := $(file < /dev/stdin)
 
-sum-3 = $(call int_decode,$(foreach i,$(call sequence,$1,$(call plus,$1,2)),$(call int_encode,$(word $i,$2))))
-
-sliding-sum-3 = $(foreach i,$(call sequence,1,$(call subtract,$(words $1),2)),$(call sum-3,$i,$1))
+sliding-sum-3 = $(foreach i,$(range $(int-sub $(words $1),2)),$(int-sum $(wordlist $i,$(int-add $i,2),$1)))
 
 sums := $(call sliding-sum-3,$(input))
-a := $(call rest,$(sums))
-b := $(call chop,$(sums))
-result := $(call int_decode,$(foreach i,$(call sequence,1,$(call dec,$(words $a))),$(if $(call lt,$(word $i,$a),$(word $i,$b)),,x)))
+a := $(list-init $(sums))
+b := $(list-tail $(sums))
+result := $(words $(foreach i,$(range $(words $a)),$(int-lt $(word $i,$a),$(word $i,$b))))
 
 $(info $(result))
-
-.PHONY: all
-all:
-	@true

@@ -52,4 +52,14 @@ T parse(std::string_view sv) {
     }
     return detail::parse_integral_no_sign<T>(sv);
 }
+
+template<std::floating_point T>
+T parse(std::string_view sv) {
+    T out;
+    auto [p, ec] = std::from_chars(sv.begin(), sv.end(), out);
+    if (ec != std::errc{} || p != sv.end()) {
+        throw bad_parse<T>{sv};
+    }
+    return out;
+}
 }  // namespace aoc

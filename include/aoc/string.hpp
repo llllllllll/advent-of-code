@@ -3,16 +3,39 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <functional>
 
 namespace aoc {
-inline std::vector<std::string> split(std::string_view sv, std::string_view delim) {
-    std::vector<std::string> out;
+constexpr inline std::string_view whitespace{" \n\t"};
+
+template <typename F>
+void for_split_first_of(std::string_view sv, std::string_view delim, F&& f) {
+    std::size_t end;
+    while ((end = sv.find_first_of(delim)) != std::string_view::npos) {
+        std::invoke(f, sv.substr(0, end));
+        sv.remove_prefix(end + 1);
+    }
+    std::invoke(f, sv.substr(0, end));
+}
+
+template <typename F>
+void for_split(std::string_view sv, std::string_view delim, F&& f) {
     std::size_t end;
     while ((end = sv.find(delim)) != std::string_view::npos) {
-        out.emplace_back(sv.substr(0, end));
+        std::invoke(f, sv.substr(0, end));
         sv.remove_prefix(end + delim.size());
     }
-    out.emplace_back(sv);
+    std::invoke(f, sv.substr(0, end));
+}
+
+template <typename F>
+void for_split(std::string_view sv, char delim, F&& f) {
+    return for_split(sv, std::string_view{&delim, 1}, std::forward<F>(f));
+}
+
+inline std::vector<std::string> split(std::string_view sv, std::string_view delim) {
+    std::vector<std::string> out;
+    for_split(sv, delim, [&](auto v) { out.emplace_back(v); });
     return out;
 }
 
