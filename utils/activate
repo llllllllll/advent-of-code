@@ -24,6 +24,8 @@ aoc-parse-date() (
         ;;
     2020)
         ;;
+    2021)
+        ;;
     *)
         >&2 echo "invalid year: $year"
         return -1
