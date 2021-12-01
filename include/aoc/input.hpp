@@ -20,7 +20,7 @@ std::vector<T> input_vector() {
     return std::vector<int>{r.begin(), r.end()};
 }
 
-std::string all_input() {
+inline std::string all_input() {
     std::stringstream s;
     for (const auto& l : input_range<>()) {
         s << l.get() << '\n';
