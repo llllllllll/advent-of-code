@@ -5,8 +5,9 @@
 #include <sstream>
 #include <type_traits>
 
+#include "aoc/demangle.hpp"
+
 namespace aoc {
-namespace detail {
 template<typename F>
 struct printer {
     F f;
@@ -16,6 +17,8 @@ struct printer {
     }
 };
 
+
+namespace detail {
 template<typename T>
 concept string_like = std::is_convertible_v<T, std::string_view>;
 
@@ -26,18 +29,36 @@ template<typename T>
 concept tuple_like = requires {
     std::tuple_size<T>{};
 };
+
+template<typename T>
+concept enum_like = std::is_enum_v<T>;
 }  // namespace detail
+
+
+auto repr(char c) {
+    return printer([c](std::ostream& os) -> std::ostream& {
+        return os << '\'' << c << '\'';
+    });
+}
 
 template<typename T>
 auto repr(const T& val) {
-    return detail::printer{[&](std::ostream& os) -> std::ostream& { return os << val; }};
+    return printer{[&](std::ostream& os) -> std::ostream& { return os << val; }};
+}
+
+template<detail::enum_like E>
+auto repr(const E& val) {
+    return printer([&](std::ostream& os) -> std::ostream& {
+        return os << aoc::type_name<E>() << '{'
+                  << repr(static_cast<std::underlying_type_t<E>>(val)) << '}';
+    });
 }
 
 template<detail::string_like T>
 auto repr(const T& val) {
-    return detail::printer{[&](std::ostream& os) -> std::ostream& {
+    return printer{[&](std::ostream& os) -> std::ostream& {
         os << '"';
-        for (char c : val) {
+        for (char c : std::string_view{val}) {
             switch (c) {
             case '"':
                 os << '\\' << '"';
@@ -79,7 +100,7 @@ std::ostream& print_tuple(std::ostream& os, const T& tup, std::index_sequence<Ix
 
 template<detail::tuple_like T>
 auto repr(const T& val) {
-    return detail::printer{[&](std::ostream& os) -> std::ostream& {
+    return printer{[&](std::ostream& os) -> std::ostream& {
         return detail::print_tuple(os,
                                    val,
                                    std::make_index_sequence<std::tuple_size_v<T>>{});
@@ -88,7 +109,7 @@ auto repr(const T& val) {
 
 template<detail::non_string_range T>
 auto repr(const T& val) {
-    return detail::printer{[&](std::ostream& os) -> std::ostream& {
+    return printer{[&](std::ostream& os) -> std::ostream& {
         os << "{";
         auto begin = std::ranges::begin(val);
         const auto end = std::ranges::end(val);

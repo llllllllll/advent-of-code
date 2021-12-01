@@ -1,6 +1,6 @@
 #include "aoc/aoc.hpp"
 
-template<std::ranges::input_range R>
+template<std::ranges::range R>
 auto solution(R&& input) {
     return 0;
 }
