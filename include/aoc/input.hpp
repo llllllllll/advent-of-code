@@ -4,6 +4,7 @@
 #include <iterator>
 #include <ranges>
 #include <sstream>
+#include <vector>
 
 #include "aoc/line.hpp"
 
@@ -11,6 +12,12 @@ namespace aoc {
 template<typename T = aoc::line>
 std::ranges::subrange<std::istream_iterator<T>> input_range() {
     return {std::istream_iterator<T>{std::cin}, std::istream_iterator<T>{}};
+}
+
+template<typename T = aoc::line>
+std::vector<T> input_vector() {
+    auto r = input_range<T>();
+    return std::vector<int>{r.begin(), r.end()};
 }
 
 std::string all_input() {

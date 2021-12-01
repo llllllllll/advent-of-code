@@ -1,8 +1,7 @@
 #include "aoc/aoc.hpp"
 
 int main() {
-    const std::vector<int> input{std::istream_iterator<int>{std::cin},
-                            std::istream_iterator<int>{}};
+    const auto input = aoc::input_vector<int>();
     std::vector<int> sliding_sum(input.size());
     std::deque<int> buf = {input[0], input[1], input[2]};
     int sum = input[0] + input[1] + input[2];
