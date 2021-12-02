@@ -2,11 +2,8 @@ include ../../../make-utils/make-utils.make
 
 input := $(file < /dev/stdin)
 
-sliding-sum-3 = $(foreach i,$(range $(int-sub $(words $1),2)),$(int-sum $(wordlist $i,$(int-add $i,2),$1)))
+a := $(list-tail $(list-tail $(list-tail $(input))))
+b := $(list-init $(list-init $(list-init $(input))))
 
-sums := $(call sliding-sum-3,$(input))
-a := $(list-init $(sums))
-b := $(list-tail $(sums))
-result := $(words $(foreach i,$(range $(words $a)),$(int-lt $(word $i,$a),$(word $i,$b))))
-
-$(info $(result))
+gt := $(foreach i,$(range $(words $a)),$(int-gt $(word $i,$a),$(word $i,$b)))
+$(info $(words $(gt)))

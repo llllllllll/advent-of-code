@@ -2,7 +2,9 @@ include ../../../make-utils/make-utils.make
 
 input := $(file < /dev/stdin)
 
-diff = $(foreach i,$(range $(int-dec $(words $(input)))),$(int-sub $(word $(int-add $i,1),$1),$(word $i,$1)))
-increases = $(filter-out -%,$1)
+a := $(list-tail $(input))
+b := $(list-init $(input))
 
-$(info $(words $(call increases,$(call diff,$(input)))))
+gt := $(foreach i,$(range $(words $a)),$(int-gt $(word $i,$a),$(word $i,$b)))
+$(info $(words $(gt)))
+
