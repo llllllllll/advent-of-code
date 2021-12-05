@@ -1,4 +1,9 @@
-project('aoc', 'cpp', version : '2021', default_options : ['cpp_std=c++20'])
+project(
+  'aoc',
+  'cpp',
+  version : '2021',
+  default_options : ['cpp_std=c++20', 'warning_level=3'],
+)
 fs = import('fs')
 
 years = ['2019', '2020', '2021']

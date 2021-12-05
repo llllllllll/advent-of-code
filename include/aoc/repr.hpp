@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ranges>
 #include <sstream>
+#include <bitset>
 #include <type_traits>
 
 #include "aoc/demangle.hpp"
@@ -34,8 +35,7 @@ template<typename T>
 concept enum_like = std::is_enum_v<T>;
 }  // namespace detail
 
-
-auto repr(char c) {
+inline auto repr(char c) {
     return printer([c](std::ostream& os) -> std::ostream& {
         return os << '\'' << c << '\'';
     });

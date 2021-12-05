@@ -28,9 +28,9 @@ private:
 
 namespace detail {
 template<std::integral T>
-T parse_integral_no_sign(std::string_view sv) {
+T parse_integral_no_sign(std::string_view sv, int base = 10) {
     T out;
-    auto [p, ec] = std::from_chars(sv.begin(), sv.end(), out);
+    auto [p, ec] = std::from_chars(sv.begin(), sv.end(), out, base);
     if (ec != std::errc{} || p != sv.end()) {
         throw bad_parse<T>{sv};
     }
@@ -39,18 +39,18 @@ T parse_integral_no_sign(std::string_view sv) {
 }  // namespace detail
 
 template<std::integral T>
-T parse(std::string_view sv) {
+T parse(std::string_view sv, int base = 10) {
     if (sv.empty()) {
         throw bad_parse<T>{sv};
     }
     if (sv[0] == '-') {
         sv.remove_prefix(1);
-        return -detail::parse_integral_no_sign<T>(sv);
+        return -detail::parse_integral_no_sign<T>(sv, base);
     }
     if (sv[0] == '+') {
         sv.remove_prefix(1);
     }
-    return detail::parse_integral_no_sign<T>(sv);
+    return detail::parse_integral_no_sign<T>(sv, base);
 }
 
 template<std::floating_point T>
