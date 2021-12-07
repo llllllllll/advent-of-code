@@ -24,3 +24,9 @@ map = $(foreach i,$(range $(words $2)),$(call $1,$(word $i,$2)))
 
 # zip-with :: (a -> b -> c) -> [a] -> [b] -> [c]
 zip-with = $(foreach i,$(range $(words $2)),$(call $1,$(word $i,$2),$(word $i,$3)))
+
+# list-init :: [a] -> [a]
+list-init = $(wordlist 1,$(int-sub $(words $1),1),$1)
+
+# list-tail :: [a] -> [a]
+list-tail = $(wordlist 2,$(words $1),$1)

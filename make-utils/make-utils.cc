@@ -222,8 +222,6 @@ extern "C" int make_utils_gmk_setup() {
     gmk_add_function("float-sum", sum<double>, 1, 1, 0);
 
     gmk_add_function("range", range, 1, 3, 0);
-    gmk_add_function("list-init", list_init, 1, 1, 0);
-    gmk_add_function("list-tail", list_tail, 1, 1, 0);
     return 1;
 }
 }  // namespace aoc::make_utils

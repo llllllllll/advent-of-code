@@ -6,7 +6,7 @@
 #include <functional>
 
 namespace aoc {
-constexpr inline std::string_view whitespace{" \n\t"};
+constexpr inline std::string_view whitespace{" \r\n\t"};
 
 template <typename F>
 void for_split_first_of(std::string_view sv, std::string_view delim, F&& f) {
@@ -43,17 +43,17 @@ inline std::vector<std::string> split(std::string_view sv, char delim) {
     return split(sv, std::string_view{&delim, 1});
 }
 
-inline std::string strip(std::string_view sv) {
-    constexpr std::string_view whitespace = " \r\n\t";
-    sv.remove_prefix(sv.find_first_not_of(whitespace));
-    const auto suffix = sv.find_last_not_of(whitespace);
-    if (suffix != std::string_view::npos) {
-        sv.remove_suffix(sv.size() - suffix - 1);
-    }
-    return std::string{sv};
-}
-
 inline bool starts_with(std::string_view cs, std::string_view prefix) {
     return cs.rfind(prefix, 0) == 0;
+}
+
+inline std::string_view strip_view(std::string_view cs) {
+    const auto begin = cs.find_first_not_of(whitespace);
+    const auto end = cs.find_last_not_of(whitespace);
+    return cs.substr(begin, end - begin + 1);
+}
+
+inline std::string strip(std::string_view sv) {
+    return std::string{strip_view(sv)};
 }
 }  // namespace aoc
