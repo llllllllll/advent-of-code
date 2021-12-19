@@ -1,10 +1,11 @@
 #pragma once
 
 #include <functional>
+#include <ostream>
 #include <utility>
 
 namespace aoc {
-template <typename T = int>
+template <typename T = ptrdiff_t>
 class point {
 public:
     point() = default;
@@ -27,6 +28,10 @@ public:
     auto operator<=>(const point&) const = default;
 
 private:
+    friend std::ostream& operator<<(std::ostream& os, const point& p) {
+        return os << '(' << p.x() << ", " << p.y() << ')';
+    }
+
     T x_;
     T y_;
 };
