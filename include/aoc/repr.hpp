@@ -24,12 +24,12 @@ template<typename T>
 concept string_like = std::is_convertible_v<T, std::string_view>;
 
 template<typename T>
-concept non_string_range = !string_like<T> && std::ranges::range<T>;
-
-template<typename T>
 concept tuple_like = requires {
     std::tuple_size<T>{};
 };
+
+template<typename T>
+concept non_string_range = !string_like<T> && std::ranges::range<T> && !tuple_like<T>;
 
 template<typename T>
 concept enum_like = std::is_enum_v<T>;

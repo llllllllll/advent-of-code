@@ -9,7 +9,7 @@ AccessModifierOffset: -4
 AlignEscapedNewlines: Right
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: true
 AlwaysBreakTemplateDeclarations: true
 BinPackArguments: false
 BinPackParameters: false
