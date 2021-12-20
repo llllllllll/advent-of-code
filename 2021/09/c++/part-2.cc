@@ -5,13 +5,13 @@ aoc::matrix<int> parse(R&& input) {
     std::vector<std::string> lines(input.begin(), input.end());
 
     aoc::matrix<int> grid(lines.size() + 2, lines[0].size() + 2, 10);
-    ptrdiff_t row = 1;
+    ptrdiff_t x = 1;
     for (const auto& line : lines) {
-        ptrdiff_t col = 1;
+        ptrdiff_t y = 1;
         for (char c : line) {
-            grid(row, col++) = c - '0';
+            grid(x, y++) = c - '0';
         }
-        ++row;
+        ++x;
     }
 
     return grid;
@@ -38,10 +38,10 @@ auto solution(R&& input) {
     auto grid = parse(AOC_FWD(input));
 
     std::unordered_set<aoc::point<int>> points;
-    for (ptrdiff_t row = 1; row < grid.rows() - 1; ++row) {
-        for (ptrdiff_t col = 1; col < grid.cols() - 1; ++col) {
-            if (grid(row, col) < 9) {
-                points.emplace(row, col);
+    for (ptrdiff_t x = 1; x < grid.x() - 1; ++x) {
+        for (ptrdiff_t y = 1; y < grid.y() - 1; ++y) {
+            if (grid(x, y) < 9) {
+                points.emplace(x, y);
             }
         }
     }

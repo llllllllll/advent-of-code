@@ -13,15 +13,15 @@ namespace aoc {
 template<typename T>
 class matrix {
 public:
-    matrix(ptrdiff_t rows, ptrdiff_t cols)
-        : storage_(rows * cols), rows_{rows}, cols_{cols} {}
+    matrix(ptrdiff_t x, ptrdiff_t y)
+        : storage_(x * y), x_{x}, y_{y} {}
 
-    matrix(ptrdiff_t rows, ptrdiff_t cols, const T& init)
-        : storage_(rows * cols, init), rows_{rows}, cols_{cols} {}
+    matrix(ptrdiff_t x, ptrdiff_t y, const T& init)
+        : storage_(x * y, init), x_{x}, y_{y} {}
 
-    T& operator()(ptrdiff_t r, ptrdiff_t c) { return storage_[r * cols_ + c]; }
+    T& operator()(ptrdiff_t r, ptrdiff_t c) { return storage_[r * y_ + c]; }
     const T& operator()(ptrdiff_t r, ptrdiff_t c) const {
-        return storage_[r * cols_ + c];
+        return storage_[r * y_ + c];
     }
 
     template<typename U>
@@ -36,22 +36,32 @@ public:
     auto flat() const { return std::views::all(storage_); }
     auto flat() { return std::views::all(storage_); }
 
-    ptrdiff_t rows() const { return rows_; }
-    ptrdiff_t cols() const { return cols_; }
+    ptrdiff_t x() const { return x_; }
+    ptrdiff_t y() const { return y_; }
+
+    matrix transpose() const {
+        matrix out{y(), x()};
+        for (ptrdiff_t y = 0; y < this->y(); ++y) {
+            for (ptrdiff_t x = 0; x < this->x(); ++x) {
+                out(y, x) = (*this)(x, y);
+            }
+        }
+        return out;
+    }
 
 private:
     friend std::ostream& operator<<(std::ostream& os, const matrix& m) {
-        std::vector<size_t> longest_sizes(m.cols());
-        matrix<std::string> as_strings(m.rows(), m.cols());
-        for (ptrdiff_t row = 0; row < m.rows(); ++row) {
-            for (ptrdiff_t col = 0; col < m.cols(); ++col) {
+        std::vector<size_t> longest_sizes(m.y());
+        matrix<std::string> as_strings(m.x(), m.y());
+        for (ptrdiff_t row = 0; row < m.x(); ++row) {
+            for (ptrdiff_t col = 0; col < m.y(); ++col) {
                 const auto& str = as_strings(row, col) = repr_str(m(row, col));
                 longest_sizes[col] = std::max(longest_sizes[col], str.size());
             }
         }
-        for (ptrdiff_t col = 0; col < m.cols(); ++col) {
+        for (ptrdiff_t col = 0; col < m.y(); ++col) {
             const auto max_size = longest_sizes[col];
-            for (ptrdiff_t row = 0; row < m.rows(); ++row) {
+            for (ptrdiff_t row = 0; row < m.x(); ++row) {
                 auto& str = as_strings(row, col);
                 str.insert(0, max_size - str.size(), ' ');
             }
@@ -63,10 +73,10 @@ private:
         for (const auto& val : as_strings.flat()) {
             os << val;
             ++col;
-            if (col == m.cols()) {
+            if (col == m.y()) {
                 col = 0;
                 ++row;
-                if (row == m.rows()) {
+                if (row == m.x()) {
                     os << '}';
                 }
                 else {
@@ -81,7 +91,7 @@ private:
     }
 
     std::vector<T> storage_;
-    ptrdiff_t rows_;
-    ptrdiff_t cols_;
+    ptrdiff_t x_;
+    ptrdiff_t y_;
 };
 }  // namespace aoc

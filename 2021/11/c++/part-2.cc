@@ -5,13 +5,13 @@ aoc::matrix<int> parse(R&& input) {
     std::vector<std::string> lines(input.begin(), input.end());
     aoc::matrix<int> grid(lines.size(), lines[0].size());
 
-    ptrdiff_t row = 0;
+    ptrdiff_t x = 0;
     for (const auto& line : lines) {
-        ptrdiff_t col = 0;
+        ptrdiff_t y = 0;
         for (char c : line) {
-            grid(row, col++) = c - '0';
+            grid(x, y++) = c - '0';
         }
-        ++row;
+        ++x;
     }
     return grid;
 }
@@ -22,7 +22,7 @@ void for_each_neighbor(aoc::point<ptrdiff_t> p, aoc::matrix<int>& grid, auto&& f
             const aoc::point<ptrdiff_t> offset{c, r};
             const auto p2 = p + aoc::point<ptrdiff_t>{c, r};
             if (offset != aoc::point<ptrdiff_t>{0, 0} && p2.x() >= 0 &&
-                p2.x() < grid.cols() && p2.y() >= 0 && p2.y() < grid.rows()) {
+                p2.x() < grid.y() && p2.y() >= 0 && p2.y() < grid.x()) {
                 std::invoke(f, p2);
             }
         }
@@ -41,9 +41,9 @@ auto solution(R&& input) {
 
 
     for (size_t step = 0; ;++step) {
-        for (ptrdiff_t row = 0; row < grid.rows(); ++row) {
-            for (ptrdiff_t col = 0; col < grid.cols(); ++col) {
-                increment_point({col, row}, grid);
+        for (ptrdiff_t x = 0; x < grid.x(); ++x) {
+            for (ptrdiff_t y = 0; y < grid.y(); ++y) {
+                increment_point({y, x}, grid);
             }
         }
         size_t flashes = 0;

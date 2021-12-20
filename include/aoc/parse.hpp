@@ -18,9 +18,19 @@ public:
         : msg_("failed to parse "s + aoc::type_name<T>() +
                " from: " + aoc::repr_str(data)) {}
 
-    const char* what() const noexcept override {
-        return msg_.data();
-    }
+    const char* what() const noexcept override { return msg_.data(); }
+
+private:
+    std::string msg_;
+};
+
+template<>
+class bad_parse<void> : public std::exception {
+public:
+    bad_parse(std::string_view data)
+        : msg_("failed to parse input from: " + aoc::repr_str(data)) {}
+
+    const char* what() const noexcept override { return msg_.data(); }
 
 private:
     std::string msg_;

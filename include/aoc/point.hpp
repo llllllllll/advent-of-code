@@ -17,10 +17,10 @@ public:
     const T& x() const { return x_; }
     const T& y() const { return y_; }
 
-    point operator+(const point& other) {
+    point operator+(const point& other) const {
         return {x() + other.x(), y() + other.y()};
     }
-    point operator-(const point& other) {
+    point operator-(const point& other) const {
         return {x() - other.x(), y() - other.y()};
     }
 
