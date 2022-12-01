@@ -6,7 +6,7 @@ project(
 )
 fs = import('fs')
 
-years = ['2019', '2020', '2021']
+years = ['2019', '2020', '2021', '2022']
 
 utils_incdir = include_directories('include')
 thread_dep = dependency('threads')
