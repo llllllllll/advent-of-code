@@ -12,6 +12,8 @@ utils_incdir = include_directories('include')
 thread_dep = dependency('threads')
 ncurses_dep = dependency('ncurses')
 
+range_dep = subproject('range-v3').get_variable('range_dep')
+
 days = [
   '01',
   '02',
@@ -53,7 +55,7 @@ foreach year : years
           name,
           [path],
           include_directories : utils_incdir,
-          dependencies : [thread_dep, ncurses_dep],
+          dependencies : [thread_dep, ncurses_dep, range_dep],
         )
       endif
     endforeach
