@@ -1,6 +1,7 @@
 #pragma once
 
 #include "aoc/base_includes.hpp"
+#include "aoc/assert.hpp"
 #include "aoc/demangle.hpp"
 #include "aoc/exception.hpp"
 #include "aoc/forward.hpp"
