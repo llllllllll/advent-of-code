@@ -35,16 +35,16 @@ std::vector<int> parse_ticket(std::string_view sv) {
 template<std::ranges::range R>
 auto solution(R&& input) {
     const auto fields = parse_fields(
-        input | std::views::take_while([](auto sv) { return !sv.get().empty(); }));
+        input | std::views::take_while([](auto sv) { return !sv.empty(); }));
     const auto my_ticket = parse_ticket(*(input | std::views::drop_while([](auto sv) {
-                                              return sv.get() != "your ticket:";
+                                              return sv != "your ticket:";
                                           }) |
                                           std::views::drop(1))
                                              .begin());
 
     int scanning_error_rate = 0;
     for (auto line : input | std::views::drop_while([](auto sv) {
-                         return sv.get() != "nearby tickets:";
+                         return sv != "nearby tickets:";
                      }) | std::views::drop(1)) {
         for (int field : parse_ticket(line)) {
             if (std::ranges::none_of(fields | std::views::values,

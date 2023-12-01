@@ -89,7 +89,7 @@ template<typename I>
 auto parse(I begin, I end) {
     std::vector<instruction> out;
     for (I it = begin; it != end; ++it) {
-        out.emplace_back(instruction::parse(it->get()));
+        out.emplace_back(instruction::parse(*it));
     }
     return out;
 }

@@ -54,7 +54,7 @@ template<typename I>
 auto parse(I begin, I end) {
     std::unordered_map<std::string, contents> graph;
     for (I it = begin; it != end; ++it) {
-        auto [outer, inner] = rule::parse(it->get());
+        auto [outer, inner] = rule::parse(*it);
         graph[outer] = std::move(inner);
     }
     return graph;

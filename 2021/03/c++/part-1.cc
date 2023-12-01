@@ -9,7 +9,7 @@ auto solution(R&& input) {
     std::vector<size_t> false_counts(max_bits);
     size_t bits;
     for (auto line : input) {
-        bits = line.get().size();
+        bits = line.size();
         const auto bin = BitSet{aoc::parse<uint64_t>(line, 2)};
         for (size_t ix = 0; ix < bits; ++ix) {
             (bin[ix] ? true_counts : false_counts)[ix] += 1;

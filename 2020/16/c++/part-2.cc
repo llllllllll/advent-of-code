@@ -46,9 +46,9 @@ bool valid_ticket(const std::unordered_map<std::string, range>& fields,
 template<std::ranges::range R>
 auto solution(R&& input) {
     auto fields = parse_fields(
-        input | std::views::take_while([](auto sv) { return !sv.get().empty(); }));
+        input | std::views::take_while([](auto sv) { return !sv.empty(); }));
     const auto my_ticket = parse_ticket(*(input | std::views::drop_while([](auto sv) {
-                                              return sv.get() != "your ticket:";
+                                              return sv != "your ticket:";
                                           }) |
                                           std::views::drop(1))
                                              .begin());

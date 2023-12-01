@@ -63,8 +63,8 @@ template<std::ranges::input_range R>
 auto solution(R&& input) {
     int total_score = 0;
     for (auto&& line : input) {
-        Opponent const a{line.get()[0]};
-        Response const b{line.get()[2]};
+        Opponent const a{line[0]};
+        Response const b{line[2]};
         total_score += score(a, b);
     }
     return total_score;

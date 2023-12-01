@@ -7,7 +7,7 @@ auto solution(R&& input) {
     std::unordered_set<aoc::point<>> points;
     for (; it != end; ++it) {
         const auto& line = *it;
-        if (line.get() == ""sv) {
+        if (line == ""sv) {
             ++it;
             break;
         }

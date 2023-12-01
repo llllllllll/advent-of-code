@@ -56,7 +56,7 @@ auto solution(R&& input) {
     std::reference_wrapper cwd = root;
 
     while (it != end) {
-        auto const line = it->get();
+        auto const line = *it;
 
         if (auto const match = aoc::regex_match(R"(\$ cd (.+))", line)) {
             cwd = cwd.get().get_dir((*match)[1].str());
@@ -64,11 +64,11 @@ auto solution(R&& input) {
         }
         if (auto const match = aoc::regex_match(R"(\$ ls)", line)) {
             ++it;
-            while (it != end && it->get()[0] != '$') {
-                if (auto const match = aoc::regex_match(R"(dir (.+))", it->get())) {
+            while (it != end && (*it)[0] != '$') {
+                if (auto const match = aoc::regex_match(R"(dir (.+))", *it)) {
                     all_directories.push_back(cwd.get().add_directory((*match)[1].str()));
                 }
-                else if (auto const match = aoc::regex_match(R"((\d+) (.+))", it->get())) {
+                else if (auto const match = aoc::regex_match(R"((\d+) (.+))", *it)) {
                     cwd.get().add_file((*match)[2].str(), aoc::parse<size_t>((*match)[1].str()));
                 }
                 else {

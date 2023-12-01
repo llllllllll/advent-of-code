@@ -48,28 +48,38 @@ T parse_integral_no_sign(std::string_view sv, int base = 10) {
 }
 }  // namespace detail
 
-template<std::integral T>
-T parse(std::string_view sv, int base = 10) {
-    if (sv.empty()) {
-        throw bad_parse<T>{sv};
-    }
-    if (sv[0] == '-') {
-        sv.remove_prefix(1);
-        return -detail::parse_integral_no_sign<T>(sv, base);
-    }
-    if (sv[0] == '+') {
-        sv.remove_prefix(1);
-    }
-    return detail::parse_integral_no_sign<T>(sv, base);
-}
+template <typename T>
+struct parse_fn;
 
-template<std::floating_point T>
-T parse(std::string_view sv) {
-    T out;
-    auto [p, ec] = std::from_chars(sv.begin(), sv.end(), out);
-    if (ec != std::errc{} || p != sv.end()) {
-        throw bad_parse<T>{sv};
+template <std::integral T>
+struct parse_fn<T> {
+    constexpr inline auto operator()(std::string_view sv, int base = 10) const -> T {
+        if (sv.empty()) {
+            throw bad_parse<T>{sv};
+        }
+        if (sv[0] == '-') {
+            sv.remove_prefix(1);
+            return -detail::parse_integral_no_sign<T>(sv, base);
+        }
+        if (sv[0] == '+') {
+            sv.remove_prefix(1);
+        }
+        return detail::parse_integral_no_sign<T>(sv, base);
     }
-    return out;
-}
+};
+
+template <std::floating_point T>
+struct parse_fn<T> {
+    constexpr inline auto operator()(std::string_view sv) const ->  T {
+        T out;
+        auto [p, ec] = std::from_chars(sv.begin(), sv.end(), out);
+        if (ec != std::errc{} || p != sv.end()) {
+            throw bad_parse<T>{sv};
+        }
+        return out;
+    }
+};
+
+template <typename T>
+constexpr inline parse_fn<T> parse{};
 }  // namespace aoc

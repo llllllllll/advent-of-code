@@ -37,8 +37,8 @@ template<std::ranges::input_range R>
 auto solution(R&& input) {
     int total_score = 0;
     for (auto&& line : input) {
-        auto const opponent = parse_throw(line.get()[0]);
-        auto const target = parse_target(line.get()[2]);
+        auto const opponent = parse_throw(line[0]);
+        auto const target = parse_target(line[2]);
         total_score +=
             throw_score(needed_throw(opponent, target)) + target_score(target);
     }

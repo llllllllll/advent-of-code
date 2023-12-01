@@ -5,7 +5,7 @@ auto solution(R&& input) {
     int depth = 0;
     int horizontal = 0;
     for (const auto& command : input) {
-        const auto split = aoc::split(command.get(), ' ');
+        const auto split = aoc::split(command, ' ');
         const auto value = aoc::parse<int>(split[1]);
         if (split[0] == "forward"sv) {
             horizontal += value;

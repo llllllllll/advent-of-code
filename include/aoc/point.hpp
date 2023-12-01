@@ -20,8 +20,18 @@ public:
     point operator+(const point& other) const {
         return {x() + other.x(), y() + other.y()};
     }
+    auto operator+=(point const& other) -> point& {
+        x_ += other.x_;
+        y_ += other.y_;
+        return *this;
+    }
     point operator-(const point& other) const {
         return {x() - other.x(), y() - other.y()};
+    }
+    auto operator-=(point const& other) -> point& {
+        x_ -= other.x_;
+        y_ -= other.y_;
+        return *this;
     }
 
     bool operator==(const point&) const = default;

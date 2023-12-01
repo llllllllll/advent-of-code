@@ -8,7 +8,7 @@ auto solution(R&& input) {
     size_t bits;
     std::vector<BitSet> parsed;
     for (const auto& line : input) {
-        bits = line.get().size();
+        bits = line.size();
         parsed.emplace_back(BitSet{aoc::parse<uint64_t>(line, 2)});
     }
 

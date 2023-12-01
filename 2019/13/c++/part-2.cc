@@ -409,7 +409,7 @@ public:
                 throw std::runtime_error{"unexpected state"};
             }
             if (x.val == -1 && y.val == 0) {
-                mvprintw(0, 40, "score: %d", id.val);
+                mvprintw(0, 40, "score: %lld", id.val);
             }
             else {
                 const char* cs;
@@ -423,7 +423,7 @@ public:
                     break;
                 case tile_id::paddle: {
                     cs = "-";
-                    mvprintw(2, 40, "paddle: %d", x.val);
+                    mvprintw(2, 40, "paddle: %lld", x.val);
                     std::unordered_set<std::ptrdiff_t> to_remove;
                     for (std::ptrdiff_t check : paddle_addresses) {
                         if (m_machine.mem()[check] != x.val) {
@@ -434,7 +434,7 @@ public:
                         paddle_addresses.erase(r);
                     }
                     if (paddle_addresses.size() == 1) {
-                        mvprintw(3, 40, "paddle addr: %d", *paddle_addresses.begin());
+                        mvprintw(3, 40, "paddle addr: %ld", *paddle_addresses.begin());
                     }
                     if (paddle_addresses.size() == 0) {
                         mvprintw(3, 40, "paddle addr: lost");
@@ -443,7 +443,7 @@ public:
                 }
                 case tile_id::ball: {
                     cs = "o";
-                    mvprintw(4, 40, "ball %d,%d", x.val, y.val);
+                    mvprintw(4, 40, "ball %lld,%lld", x.val, y.val);
                     std::unordered_set<std::ptrdiff_t> to_remove_x;
                     for (std::ptrdiff_t check : ball_x_addresses) {
                         if (m_machine.mem()[check] != x.val) {
@@ -454,7 +454,7 @@ public:
                         ball_x_addresses.erase(r);
                     }
                     if (ball_x_addresses.size() == 1) {
-                        mvprintw(5, 40, "ball x addr: %d", *ball_x_addresses.begin());
+                        mvprintw(5, 40, "ball x addr: %ld", *ball_x_addresses.begin());
                     }
                     if (paddle_addresses.size() == 0) {
                         mvprintw(5, 40, "ball x addr: lost");

@@ -28,7 +28,7 @@ grid parse(R&& input) {
     int y = 0;
     for (auto line : input) {
         int x = 0;
-        for (char c : line.get()) {
+        for (char c : line) {
             if (c == '#') {
                 out.emplace(point{x, y, 0});
             }

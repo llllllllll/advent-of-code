@@ -28,6 +28,8 @@ aoc-parse-date() (
         ;;
     2022)
         ;;
+    2023)
+        ;;
     *)
         >&2 echo "invalid year: $year"
         return -1

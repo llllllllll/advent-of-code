@@ -14,7 +14,7 @@ auto parse_interval(std::string_view interval) -> Interval {
     return {aoc::parse<int>(split.at(0)), aoc::parse<int>(split.at(1))};
 }
 
-auto parse_line(std::string_view line) -> std::pair<Interval, Interval> 
+auto parse_line(std::string_view line) -> std::pair<Interval, Interval> {
     auto split = aoc::split(line, ',');
     return {parse_interval(split.at(0)), parse_interval(split.at(1))};
 }

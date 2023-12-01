@@ -24,7 +24,7 @@ template<typename I>
 int first_invalid(I begin, I end) {
     std::deque<int> buf;
     for (I it = begin; it != end; ++it) {
-        int cand = aoc::parse<int>(it->get());
+        int cand = aoc::parse<int>(*it);
         if (buf.size() == 25) {
             if (!valid(cand, buf)) {
                 return cand;

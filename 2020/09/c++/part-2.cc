@@ -26,7 +26,7 @@ template<typename I>
 std::vector<long> read_ints(I begin, I end) {
     std::vector<long> out;
     for (I it = begin; it != end; ++it) {
-        out.emplace_back(aoc::parse<long>(it->get()));
+        out.emplace_back(aoc::parse<long>(*it));
     }
     return out;
 }

@@ -12,6 +12,7 @@ foreach suite : test_suites
      dependencies : [
        gtest.get_variable('gtest_dep'),
        gtest.get_variable('gmock_dep'),
+       range_dep,
      ],
      include_directories : utils_incdir,
   )

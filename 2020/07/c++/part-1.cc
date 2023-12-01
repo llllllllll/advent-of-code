@@ -53,7 +53,7 @@ template<typename I>
 auto parse(I begin, I end) {
     std::unordered_map<std::string, std::vector<std::string>> graph;
     for (I it = begin; it != end; ++it) {
-        auto r = rule::parse(it->get());
+        auto r = rule::parse(*it);
         for (const auto& [inner, _] : r.inner) {
             graph[inner].emplace_back(r.outer);
         }

@@ -1,8 +1,9 @@
-#include <numeric>
 #include <iostream>
+#include <iterator>
+#include <numeric>
 #include <regex>
-#include <string_view>
 #include <stdexcept>
+#include <string_view>
 
 struct password_line {
     int lower;

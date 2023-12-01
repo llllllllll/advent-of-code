@@ -16,11 +16,11 @@ auto solution(R&& input) {
         sum = 0;
     };
     for (auto&& line : input) {
-        if (line.get().empty()) {
+        if (line.empty()) {
             commit();
         }
         else {
-            sum += aoc::parse<int64_t>(line.get());
+            sum += aoc::parse<int64_t>(line);
         }
     }
     if (sum) {

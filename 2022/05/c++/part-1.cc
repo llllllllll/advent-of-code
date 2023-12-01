@@ -37,7 +37,7 @@ auto solution(R&& input) {
     auto const end = input.end();
     for (; it != end; ++it) {
         auto&& line = *it;
-        if (line.get().empty()) {
+        if (line.empty()) {
             ++it;
             break;
         }

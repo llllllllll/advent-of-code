@@ -39,5 +39,5 @@ auto solution(R&& input) {
 
 int main() {
     const auto split = aoc::split(aoc::strip(aoc::all_input()), ',');
-    aoc::dbg(solution(split | std::views::transform(aoc::parse<int>)));
+    aoc::dbg(solution(std::views::all(split) | std::views::transform(aoc::parse<int>)));
 }

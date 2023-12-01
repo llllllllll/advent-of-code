@@ -1,4 +1,6 @@
+#include <array>
 #include <iostream>
+#include <iterator>
 #include <numeric>
 #include <regex>
 #include <stdexcept>

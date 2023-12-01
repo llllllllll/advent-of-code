@@ -1,36 +1,16 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 
 namespace aoc {
-class line {
+class line : public std::string {
 public:
+    using std::string::string;
+
     friend std::istream& operator>>(std::istream& in, line& l) {
-        std::getline(in, l.data_);
+        std::getline(in, l);
         return in;
     }
-
-    operator const std::string&() const {
-        return data_;
-    }
-
-    operator std::string&() {
-        return data_;
-    }
-
-    operator std::string_view() const {
-        return data_;
-    }
-
-    const std::string& get() const {
-        return data_;
-    }
-
-    std::string& get() {
-        return data_;
-    }
-
-private:
-    std::string data_;
 };
 }  // namespace aoc

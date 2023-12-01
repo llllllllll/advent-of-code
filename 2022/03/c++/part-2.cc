@@ -13,7 +13,7 @@ auto solution(R&& input) {
     for (auto chunk : ranges::views::chunk(input, 3)) {
         std::vector<std::string> lines;
         for (auto& line : chunk) {
-            std::ranges::sort(lines.emplace_back(std::move(line.get())));
+            std::ranges::sort(lines.emplace_back(std::move(line)));
         }
 
         std::string a_b;

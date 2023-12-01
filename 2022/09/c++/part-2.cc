@@ -1,10 +1,10 @@
 #include "aoc/aoc.hpp"
 
-template <std::ranges::input_range R>
+template<std::ranges::input_range R>
 auto solution(R&& input) {
     return 0;
 }
 
-auto main() -> int {
+int main() {
     aoc::dbg(solution(aoc::input_range<aoc::line>()));
 }

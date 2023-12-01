@@ -37,6 +37,11 @@ public:
     ptrdiff_t x() const { return x_; }
     ptrdiff_t y() const { return y_; }
 
+    template <typename U>
+    constexpr auto contains_point(point<U> const& p) const -> bool {
+        return 0 <= p.x() and p.x() < x() and 0 <= p.y() and p.y() <= y();
+    }
+
     template <typename F>
     void for_each(F&& f) {
         for (ptrdiff_t y = 0; y < this->y(); ++y) {

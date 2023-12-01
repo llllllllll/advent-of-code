@@ -75,7 +75,7 @@ auto solution(R&& input) {
         const std::regex mem_regex{R"(mem\[([0-9]+)\] = ([0-9]+))"};
 
         std::smatch match;
-        if (!std::regex_match(l.get(), match, mem_regex)) {
+        if (!std::regex_match(l, match, mem_regex)) {
             throw aoc::bad_parse<std::string>(l);
         }
         m.set_mem(aoc::parse<std::intptr_t>(match[1].str()),
