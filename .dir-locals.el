@@ -14,4 +14,4 @@
                                (concat
                                 (do-shell "git rev-parse --show-toplevel")
                                 "/include")))))
-              (flycheck-gcc-language-standard . "c++20")))))
+              (flycheck-gcc-language-standard . "c++23")))))

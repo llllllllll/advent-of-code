@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 
+#include <aoc/assert.hpp>
 #include <aoc/point.hpp>
 #include <aoc/repr.hpp>
 
@@ -18,6 +19,9 @@ public:
 
     matrix(ptrdiff_t x, ptrdiff_t y, const T& init)
         : storage_(x * y, init), x_{x}, y_{y} {}
+
+    template <std::ranges::input_range R>
+    explicit matrix(R&& r) : matrix(from_range(r)) {}
 
     T& operator()(ptrdiff_t r, ptrdiff_t c) { return storage_[r * y_ + c]; }
     const T& operator()(ptrdiff_t r, ptrdiff_t c) const { return storage_[r * y_ + c]; }
@@ -33,6 +37,9 @@ public:
 
     auto flat() const { return std::views::all(storage_); }
     auto flat() { return std::views::all(storage_); }
+
+    auto rows() { return storage_ | std::views::chunk(x()); }
+    auto rows() const { return storage_ | std::views::chunk(x()); }
 
     ptrdiff_t x() const { return x_; }
     ptrdiff_t y() const { return y_; }
@@ -96,6 +103,24 @@ public:
     }
 
 private:
+    template <std::ranges::input_range R>
+    static auto from_range(R&& input) -> matrix {
+        std::vector vec(input.begin(), input.end());
+        AOC_ASSERT(not vec.empty());
+        matrix out(vec.size(), vec.front().size());
+        ptrdiff_t row = 0;
+        for (auto const& line : vec) {
+            AOC_ASSERT(static_cast<ptrdiff_t>(line.size()) == out.y());
+            ptrdiff_t col = 0;
+            for (auto const& c : line) {
+                out(row, col) = c;
+                ++col;
+            }
+            ++row;
+        }
+        return out;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const matrix& m) {
         std::vector<size_t> longest_sizes(m.y());
         matrix<std::string> as_strings(m.x(), m.y());
